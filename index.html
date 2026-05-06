@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Orçamento - Mana Ferreira</title>
     <style>
-        /* Variáveis de Cores (Baseadas na sua logo/arte) */
+        /* Variáveis de Cores */
         :root {
             --cor-primaria: #000000;
             --cor-secundaria: #fbb03b; 
@@ -27,7 +27,7 @@
             gap: 30px; 
         }
         
-        /* === NAVEGAÇÃO MOBILE (ABAS) === */
+        /* === NAVEGAÇÃO MOBILE === */
         .mobile-tabs {
             display: none; 
             width: 100%;
@@ -52,7 +52,7 @@
             border: 2px solid var(--cor-secundaria);
         }
 
-        /* === FORMULÁRIO ESTILIZADO === */
+        /* === FORMULÁRIO === */
         .form-container { 
             background: white; 
             padding: 25px; 
@@ -141,40 +141,19 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .btn-gerar:hover { 
-            background-color: #333; 
-            transform: translateY(-2px);
-        }
+        .btn-gerar:hover { background-color: #333; transform: translateY(-2px); }
         .btn-gerar:active { transform: translateY(0); }
 
         /* === RESPONSIVIDADE PARA MOBILE === */
-        .pdf-wrapper {
-            display: flex;
-            justify-content: center;
-        }
+        .pdf-wrapper { display: flex; justify-content: center; }
 
         @media (max-width: 900px) {
-            body { 
-                flex-direction: column; 
-                align-items: center; 
-                padding: 10px;
-            }
-            .mobile-tabs {
-                display: flex; 
-            }
-            .form-container {
-                max-width: 100%;
-                height: calc(100vh - 80px); 
-                border-radius: 8px;
-            }
-            .pdf-wrapper {
-                width: 100%;
-                overflow-x: hidden; 
-                padding-bottom: 20px;
-                display: none; 
-            }
-
-            .pdf-preview-container {
+            body { flex-direction: column; align-items: center; padding: 10px; }
+            .mobile-tabs { display: flex; }
+            .form-container { max-width: 100%; height: calc(100vh - 80px); border-radius: 8px; }
+            .pdf-wrapper { width: 100%; overflow-x: hidden; padding-bottom: 20px; display: none; }
+            
+            .pdf-preview {
                 transform: scale(0.45); 
                 transform-origin: top center; 
                 margin-bottom: -60%; 
@@ -185,96 +164,61 @@
             .pdf-wrapper.show-mobile { display: flex !important; }
         }
 
-        /* === LAYOUT DA FOLHA A4 COM TABELA (REPETE HEADER/FOOTER) === */
-        .pdf-preview-container { 
+        /* === MÁGICA DA FOLHA A4 === */
+        .pdf-preview { 
             width: 210mm; 
+            min-height: 297mm; 
             margin: 0 auto; 
             background: white; 
             box-shadow: 0 0 15px rgba(0,0,0,0.15); 
             box-sizing: border-box; 
+            position: relative; /* Segura as imagens absolutas */
             flex-shrink: 0;
         }
 
-        table.pdf-table {
-            width: 100%;
-            min-height: 297mm; /* Garante tamanho mínimo de folha A4 na tela */
-            border-collapse: collapse;
-            border-spacing: 0;
-        }
+        /* Imagens presas no topo e fim da folha */
+        .header-img { position: absolute; top: 0; left: 0; width: 100%; z-index: 5; }
+        .footer-img { position: absolute; bottom: 0; left: 0; width: 100%; z-index: 5; }
+        .header-img img, .footer-img img { width: 100%; display: block; }
 
-        table.pdf-table thead td,
-        table.pdf-table tfoot td {
-            padding: 0;
-        }
-
-        table.pdf-table thead img,
-        table.pdf-table tfoot img {
-            width: 100%;
-            display: block;
-        }
-
-        /* A célula do conteúdo principal */
-        .content-cell {
-            vertical-align: top;
-            height: 100%; /* Isso força o rodapé a ir pro fundo da página se o texto for curto */
-        }
-
-        .content { 
-            padding: 10mm 20mm; 
-            color: black;
-            font-size: 14px; 
-            line-height: 1.6; 
-        }
+        /* A tabela agora serve apenas para alinhar e proteger o texto */
+        .pdf-table { width: 100%; border-collapse: collapse; position: relative; z-index: 10; }
         
+        /* Aumente ou diminua estes valores se o texto invadir a arte do cabeçalho/rodapé */
+        .header-space { height: 200px; } 
+        .footer-space { height: 160px; }
+
+        .content { padding: 0 20mm; color: black; font-size: 14px; line-height: 1.6; }
         .content p { margin: 5px 0; }
         
-        .main-title { 
-            font-weight: bold; 
-            font-size: 18px; 
-            text-align: center; 
-            text-decoration: underline; 
-            margin-bottom: 20px; 
-        }
-
-        .section-title { 
-            font-weight: bold; 
-            font-size: 16px; 
-            margin-top: 25px; 
-            margin-bottom: 10px;
-            text-decoration: underline; 
-            text-align: center; 
-        }
-        
+        .main-title { font-weight: bold; font-size: 18px; text-align: center; text-decoration: underline; margin-bottom: 20px; }
+        .section-title { font-weight: bold; font-size: 16px; margin-top: 25px; margin-bottom: 10px; text-decoration: underline; text-align: center; }
         ul { margin-top: 5px; padding-left: 20px; margin-bottom: 15px; }
-        
         #out-inv-valores { list-style-type: none; padding-left: 0; }
 
-        /* === CONFIGURAÇÕES RIGOROSAS PARA IMPRESSÃO === */
+        /* === CONFIGURAÇÕES RIGOROSAS PARA IMPRESSÃO E PDF === */
         @media print {
             @page { margin: 0; } 
             body { background: white; padding: 0; margin: 0; display: block; }
             .mobile-tabs, .form-container { display: none !important; }
-            .pdf-wrapper { overflow-x: visible; padding: 0; display: block !important; }
+            .pdf-wrapper { overflow: visible !important; padding: 0; display: block !important; }
             
-            .pdf-preview-container { 
+            .pdf-preview { 
                 box-shadow: none; 
                 width: 100%; 
+                min-height: auto; 
                 margin: 0; 
                 transform: scale(1) !important; 
             }
 
-            table.pdf-table {
-                min-height: auto; /* Libera o tamanho pra quebrar em várias folhas */
-            }
+            /* Na impressão, o "absolute" vira "fixed" para repetir em TODAS as folhas */
+            .header-img { position: fixed; top: 0; }
+            .footer-img { position: fixed; bottom: 0; }
 
-            .content-cell {
-                height: auto !important; /* Libera o espaço interno na hora de imprimir */
-            }
-
-            /* Essas 3 linhas fazem a mágica de repetir cabeçalho e rodapé em toda página */
+            /* Repete os espaços invisíveis para o texto não ficar por cima da imagem */
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
-            tr { page-break-inside: avoid; } /* Evita que uma linha de texto seja cortada no meio */
+            tr { page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -369,22 +313,26 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
 
     <!-- Wrapper para o PDF -->
     <div class="pdf-wrapper" id="pdf-section">
-        <!-- Visualização em Tabela -->
-        <div class="pdf-preview-container">
+        <!-- Visualização Estruturada -->
+        <div class="pdf-preview" id="pdf-content">
+            
+            <!-- IMAGENS FORA DA TABELA (Coladas nas bordas) -->
+            <div class="header-img">
+                <img src="cabecalho.png" alt="Cabeçalho">
+            </div>
+            <div class="footer-img">
+                <img src="rodape.png" alt="Rodapé">
+            </div>
+            
+            <!-- TABELA APENAS PARA ESPAÇAMENTO -->
             <table class="pdf-table">
-                <!-- CABEÇALHO DA TABELA (Repete no topo de toda folha) -->
                 <thead>
-                    <tr>
-                        <td>
-                            <img src="cabecalho.png" alt="Cabeçalho">
-                        </td>
-                    </tr>
+                    <tr><td><div class="header-space"></div></td></tr>
                 </thead>
                 
-                <!-- CORPO DA TABELA (O texto flui aqui dentro) -->
                 <tbody>
                     <tr>
-                        <td class="content-cell">
+                        <td>
                             <div class="content">
                                 <div class="main-title">Orçamento</div>
 
@@ -410,13 +358,8 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
                     </tr>
                 </tbody>
 
-                <!-- RODAPÉ DA TABELA (Repete no fim de toda folha) -->
                 <tfoot>
-                    <tr>
-                        <td>
-                            <img src="rodape.png" alt="Rodapé">
-                        </td>
-                    </tr>
+                    <tr><td><div class="footer-space"></div></td></tr>
                 </tfoot>
             </table>
         </div>
