@@ -8,11 +8,11 @@
         /* Variáveis de Cores (Baseadas na sua logo/arte) */
         :root {
             --cor-primaria: #000000;
-            --cor-secundaria: #fbb03b; /* Amarelo/Dourado das artes */
+            --cor-secundaria: #fbb03b; 
             --cor-fundo: #020202;
             --cor-borda: #c2c8d0;
             --cor-texto: #333333;
-            --cor-input: #eef1f6; /* Nova cor para os campos */
+            --cor-input: #eef1f6; 
         }
 
         body { 
@@ -29,7 +29,7 @@
         
         /* === NAVEGAÇÃO MOBILE (ABAS) === */
         .mobile-tabs {
-            display: none; /* Escondido no Desktop */
+            display: none; 
             width: 100%;
             max-width: 420px;
             gap: 10px;
@@ -66,7 +66,6 @@
             border-top: 6px solid var(--cor-secundaria);
         }
 
-        /* Scrollbar customizada para o formulário */
         .form-container::-webkit-scrollbar { width: 8px; }
         .form-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .form-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
@@ -161,64 +160,74 @@
                 padding: 10px;
             }
             .mobile-tabs {
-                display: flex; /* Mostra as abas no mobile */
+                display: flex; 
             }
             .form-container {
                 max-width: 100%;
-                height: calc(100vh - 80px); /* Ocupa quase a tela toda */
+                height: calc(100vh - 80px); 
                 border-radius: 8px;
             }
             .pdf-wrapper {
                 width: 100%;
-                overflow-x: hidden; /* Remove rolagem horizontal */
+                overflow-x: hidden; 
                 padding-bottom: 20px;
-                display: none; /* Esconde o PDF inicialmente no celular */
+                display: none; 
             }
 
-            /* Efeito Miniatura da Folha no Celular */
-            .pdf-preview {
-                transform: scale(0.45); /* Encolhe a folha para 45% do tamanho original */
-                transform-origin: top center; /* Mantém ela fixada pelo topo */
-                margin-bottom: -60%; /* Puxa o espaço em branco que fica embaixo devido ao encolhimento */
+            .pdf-preview-container {
+                transform: scale(0.45); 
+                transform-origin: top center; 
+                margin-bottom: -60%; 
             }
 
-            /* Classes utilitárias para alternar as abas */
             .show-mobile { display: block !important; }
             .hide-mobile { display: none !important; }
             .pdf-wrapper.show-mobile { display: flex !important; }
         }
 
-        /* === LAYOUT DA FOLHA A4 === */
-        .pdf-preview { 
+        /* === LAYOUT DA FOLHA A4 COM TABELA (REPETE HEADER/FOOTER) === */
+        .pdf-preview-container { 
             width: 210mm; 
-            min-height: 297mm; 
             margin: 0 auto; 
             background: white; 
             box-shadow: 0 0 15px rgba(0,0,0,0.15); 
             box-sizing: border-box; 
-            display: flex; 
-            flex-direction: column; 
-            position: relative;
             flex-shrink: 0;
         }
-        
-        /* Cabeçalho e Rodapé colados na borda */
-        .header { width: 100%; margin: 0; padding: 0; }
-        .footer { width: 100%; margin-top: auto; padding: 0; }
-        .header img, .footer img { width: 100%; height: auto; display: block; }
 
-        /* Área do texto */
+        table.pdf-table {
+            width: 100%;
+            min-height: 297mm; /* Garante tamanho mínimo de folha A4 na tela */
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        table.pdf-table thead td,
+        table.pdf-table tfoot td {
+            padding: 0;
+        }
+
+        table.pdf-table thead img,
+        table.pdf-table tfoot img {
+            width: 100%;
+            display: block;
+        }
+
+        /* A célula do conteúdo principal */
+        .content-cell {
+            vertical-align: top;
+            height: 100%; /* Isso força o rodapé a ir pro fundo da página se o texto for curto */
+        }
+
         .content { 
-            flex-grow: 1; 
-            font-size: 14px; 
-            line-height: 1.6; 
             padding: 10mm 20mm; 
             color: black;
+            font-size: 14px; 
+            line-height: 1.6; 
         }
         
         .content p { margin: 5px 0; }
         
-        /* Título Principal (Orçamento) */
         .main-title { 
             font-weight: bold; 
             font-size: 18px; 
@@ -227,7 +236,6 @@
             margin-bottom: 20px; 
         }
 
-        /* Subtítulos */
         .section-title { 
             font-weight: bold; 
             font-size: 16px; 
@@ -247,21 +255,32 @@
             body { background: white; padding: 0; margin: 0; display: block; }
             .mobile-tabs, .form-container { display: none !important; }
             .pdf-wrapper { overflow-x: visible; padding: 0; display: block !important; }
-            .pdf-preview { 
+            
+            .pdf-preview-container { 
                 box-shadow: none; 
                 width: 100%; 
-                height: 100vh; 
-                padding: 0; 
                 margin: 0; 
-                transform: scale(1) !important; /* Desativa a miniatura na impressão */
-                page-break-after: always; 
+                transform: scale(1) !important; 
             }
+
+            table.pdf-table {
+                min-height: auto; /* Libera o tamanho pra quebrar em várias folhas */
+            }
+
+            .content-cell {
+                height: auto !important; /* Libera o espaço interno na hora de imprimir */
+            }
+
+            /* Essas 3 linhas fazem a mágica de repetir cabeçalho e rodapé em toda página */
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            tr { page-break-inside: avoid; } /* Evita que uma linha de texto seja cortada no meio */
         }
     </style>
 </head>
 <body>
 
-    <!-- Abas Mobile (Só aparecem em telas pequenas) -->
+    <!-- Abas Mobile -->
     <div class="mobile-tabs">
         <button id="tab-form" class="active" onclick="switchTab('form')">✏️ Editar</button>
         <button id="tab-pdf" onclick="switchTab('pdf')">📄 Visualizar</button>
@@ -348,49 +367,62 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
         <button class="btn-gerar" onclick="window.print()">🖨️ Gerar PDF</button>
     </div>
 
-    <!-- Wrapper adicionado para rolagem no celular -->
+    <!-- Wrapper para o PDF -->
     <div class="pdf-wrapper" id="pdf-section">
-        <!-- Visualização do PDF -->
-        <div class="pdf-preview" id="pdf-content">
-            
-            <!-- CABEÇALHO EM IMAGEM -->
-            <div class="header">
-                <img src="cabecalho.png" alt="Cabeçalho">
-            </div>
-
-            <!-- CONTEÚDO DO ORÇAMENTO -->
-            <div class="content">
+        <!-- Visualização em Tabela -->
+        <div class="pdf-preview-container">
+            <table class="pdf-table">
+                <!-- CABEÇALHO DA TABELA (Repete no topo de toda folha) -->
+                <thead>
+                    <tr>
+                        <td>
+                            <img src="cabecalho.png" alt="Cabeçalho">
+                        </td>
+                    </tr>
+                </thead>
                 
-                <div class="main-title">Orçamento</div>
+                <!-- CORPO DA TABELA (O texto flui aqui dentro) -->
+                <tbody>
+                    <tr>
+                        <td class="content-cell">
+                            <div class="content">
+                                <div class="main-title">Orçamento</div>
 
-                <p><strong>Solicitante:</strong> <span id="out-solicitante"></span></p>
-                <p><strong>Datas:</strong> Do dia <span id="out-datas"></span></p>
-                <p><strong>Horário:</strong> <span id="out-horarios"></span></p>
-                <p><strong>Local:</strong> <span id="out-local"></span></p>
-                <p><strong>Evento:</strong> <span id="out-evento"></span></p>
+                                <p><strong>Solicitante:</strong> <span id="out-solicitante"></span></p>
+                                <p><strong>Datas:</strong> Do dia <span id="out-datas"></span></p>
+                                <p><strong>Horário:</strong> <span id="out-horarios"></span></p>
+                                <p><strong>Local:</strong> <span id="out-local"></span></p>
+                                <p><strong>Evento:</strong> <span id="out-evento"></span></p>
 
-                <div class="section-title">Serviços</div>
-                <p><strong>Antes do evento:</strong></p>
-                <ul id="out-servicos"></ul>
+                                <div class="section-title">Serviços</div>
+                                <p><strong>Antes do evento:</strong></p>
+                                <ul id="out-servicos"></ul>
 
-                <div class="section-title">Investimento</div>
-                <p id="out-inv-desc"></p>
-                <ul id="out-inv-valores"></ul>
-                <p><em id="out-obs"></em></p>
+                                <div class="section-title">Investimento</div>
+                                <p id="out-inv-desc"></p>
+                                <ul id="out-inv-valores"></ul>
+                                <p><em id="out-obs"></em></p>
 
-                <div class="section-title">Formas de pagamentos</div>
-                <p id="out-pagamento"></p>
-            </div>
+                                <div class="section-title">Formas de pagamentos</div>
+                                <p id="out-pagamento"></p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
 
-            <!-- RODAPÉ EM IMAGEM -->
-            <div class="footer">
-                <img src="rodape.png" alt="Rodapé">
-            </div>
+                <!-- RODAPÉ DA TABELA (Repete no fim de toda folha) -->
+                <tfoot>
+                    <tr>
+                        <td>
+                            <img src="rodape.png" alt="Rodapé">
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
 
     <script>
-        // Função para alternar as abas no mobile
         function switchTab(tab) {
             const formSection = document.getElementById('form-section');
             const pdfSection = document.getElementById('pdf-section');
@@ -442,12 +474,10 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
             document.getElementById('out-obs').textContent = document.getElementById('in-obs').value;
             document.getElementById('out-pagamento').textContent = document.getElementById('in-pagamento').value;
             
-            // Datas
             const dtInicio = formatarData(document.getElementById('in-data-inicio').value);
             const dtFim = formatarData(document.getElementById('in-data-fim').value);
             document.getElementById('out-datas').textContent = `${dtInicio} a ${dtFim}.`;
 
-            // Horários
             const hrInicio = document.getElementById('in-hr-inicio').value;
             const hrFim = document.getElementById('in-hr-fim').value;
             document.getElementById('out-horarios').textContent = `Das ${hrInicio} às ${hrFim}`;
