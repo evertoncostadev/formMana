@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Orçamento - Mana Ferreira</title>
+    <style>
+        /* Variáveis de Cores (Baseadas na sua logo/arte) */
+        :root {
+            --cor-primaria: #000000;
+            --cor-secundaria: #fbb03b; /* Amarelo/Dourado das artes */
+            --cor-fundo: #020202;
+            --cor-borda: #c2c8d0;
+            --cor-texto: #333333;
+            --cor-input: #eef1f6; /* Nova cor para os campos */
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--cor-fundo); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px; 
+        }
+        
+        /* === NAVEGAÇÃO MOBILE (ABAS) === */
+        .mobile-tabs {
+            display: none; /* Escondido no Desktop */
+            width: 100%;
+            max-width: 420px;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mobile-tabs button {
+            flex: 1;
+            margin: 0;
+            padding: 12px;
+            background-color: #333;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .mobile-tabs button.active {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-primaria);
+            border: 2px solid var(--cor-secundaria);
+        }
+
+        /* === FORMULÁRIO ESTILIZADO === */
+        .form-container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            width: 100%;
+            max-width: 420px; 
+            height: 90vh; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            border-top: 6px solid var(--cor-secundaria);
+        }
+
+        /* Scrollbar customizada para o formulário */
+        .form-container::-webkit-scrollbar { width: 8px; }
+        .form-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .form-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        .form-container::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+        .form-container h2 { 
+            margin-top: 0; 
+            font-size: 20px; 
+            position: sticky; 
+            top: 0; 
+            background: white; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid var(--cor-borda); 
+            z-index: 10; 
+            color: var(--cor-primaria);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .row { display: flex; gap: 10px; }
+        .row .form-group { flex: 1; }
+
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            font-size: 14px; 
+            color: var(--cor-texto); 
+        }
+        .help-text { 
+            font-size: 12px; 
+            color: #777; 
+            margin-bottom: 8px; 
+            display: block; 
+            font-style: italic;
+        }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--cor-borda); 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: inherit; 
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: var(--cor-input);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--cor-secundaria);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(251, 176, 59, 0.2);
+        }
+
+        hr { border: 0; border-top: 1px dashed var(--cor-borda); margin: 25px 0; }
+        
+        .btn-gerar { 
+            background-color: var(--cor-primaria); 
+            color: var(--cor-secundaria); 
+            border: none; 
+            padding: 16px; 
+            width: 100%; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-top: 10px; 
+            transition: background-color 0.3s, transform 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-gerar:hover { 
+            background-color: #333; 
+            transform: translateY(-2px);
+        }
+        .btn-gerar:active { transform: translateY(0); }
+
+        /* === RESPONSIVIDADE PARA MOBILE === */
+        .pdf-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        @media (max-width: 900px) {
+            body { 
+                flex-direction: column; 
+                align-items: center; 
+                padding: 10px;
+            }
+            .mobile-tabs {
+                display: flex; /* Mostra as abas no mobile */
+            }
+            .form-container {
+                max-width: 100%;
+                height: calc(100vh - 80px); /* Ocupa quase a tela toda */
+                border-radius: 8px;
+            }
+            .pdf-wrapper {
+                width: 100%;
+                overflow-x: hidden; /* Remove rolagem horizontal */
+                padding-bottom: 20px;
+                display: none; /* Esconde o PDF inicialmente no celular */
+            }
+
+            /* Efeito Miniatura da Folha no Celular */
+            .pdf-preview {
+                transform: scale(0.45); /* Encolhe a folha para 45% do tamanho original */
+                transform-origin: top center; /* Mantém ela fixada pelo topo */
+                margin-bottom: -60%; /* Puxa o espaço em branco que fica embaixo devido ao encolhimento */
+            }
+
+            /* Classes utilitárias para alternar as abas */
+            .show-mobile { display: block !important; }
+            .hide-mobile { display: none !important; }
+            .pdf-wrapper.show-mobile { display: flex !important; }
+        }
+
+        /* === LAYOUT DA FOLHA A4 === */
+        .pdf-preview { 
+            width: 210mm; 
+            min-height: 297mm; 
+            margin: 0 auto; 
+            background: white; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.15); 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        /* Cabeçalho e Rodapé colados na borda */
+        .header { width: 100%; margin: 0; padding: 0; }
+        .footer { width: 100%; margin-top: auto; padding: 0; }
+        .header img, .footer img { width: 100%; height: auto; display: block; }
+
+        /* Área do texto */
+        .content { 
+            flex-grow: 1; 
+            font-size: 14px; 
+            line-height: 1.6; 
+            padding: 10mm 20mm; 
+            color: black;
+        }
+        
+        .content p { margin: 5px 0; }
+        
+        /* Título Principal (Orçamento) */
+        .main-title { 
+            font-weight: bold; 
+            font-size: 18px; 
+            text-align: center; 
+            text-decoration: underline; 
+            margin-bottom: 20px; 
+        }
+
+        /* Subtítulos */
+        .section-title { 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-top: 25px; 
+            margin-bottom: 10px;
+            text-decoration: underline; 
+            text-align: center; 
+        }
+        
+        ul { margin-top: 5px; padding-left: 20px; margin-bottom: 15px; }
+        
+        #out-inv-valores { list-style-type: none; padding-left: 0; }
+
+        /* === CONFIGURAÇÕES RIGOROSAS PARA IMPRESSÃO === */
+        @media print {
+            @page { margin: 0; } 
+            body { background: white; padding: 0; margin: 0; display: block; }
+            .mobile-tabs, .form-container { display: none !important; }
+            .pdf-wrapper { overflow-x: visible; padding: 0; display: block !important; }
+            .pdf-preview { 
+                box-shadow: none; 
+                width: 100%; 
+                height: 100vh; 
+                padding: 0; 
+                margin: 0; 
+                transform: scale(1) !important; /* Desativa a miniatura na impressão */
+                page-break-after: always; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Abas Mobile (Só aparecem em telas pequenas) -->
+    <div class="mobile-tabs">
+        <button id="tab-form" class="active" onclick="switchTab('form')">✏️ Editar</button>
+        <button id="tab-pdf" onclick="switchTab('pdf')">📄 Visualizar</button>
+    </div>
+
+    <!-- Formulário de Entrada -->
+    <div class="form-container" id="form-section">
+        <h2>📋 Editar Orçamento</h2>
+        
+        <div class="form-group">
+            <label>Solicitante</label>
+            <input type="text" id="in-solicitante" value="Cachaça Matuta" oninput="updatePDF()">
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Data Início</label>
+                <input type="date" id="in-data-inicio" value="2025-05-06" oninput="updatePDF()">
+            </div>
+            <div class="form-group">
+                <label>Data Fim</label>
+                <input type="date" id="in-data-fim" value="2025-05-10" oninput="updatePDF()">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Horário Início</label>
+                <input type="time" id="in-hr-inicio" value="18:00" oninput="updatePDF()">
+            </div>
+            <div class="form-group">
+                <label>Horário Término</label>
+                <input type="time" id="in-hr-fim" value="02:00" oninput="updatePDF()">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Local</label>
+            <input type="text" id="in-local" value="Parque do Povo" oninput="updatePDF()">
+        </div>
+        <div class="form-group">
+            <label>Evento</label>
+            <input type="text" id="in-evento" value="São João de Campina Grande" oninput="updatePDF()">
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+            <label>Serviços</label>
+            <span class="help-text">Cada linha digitada cria um novo item na lista do PDF.</span>
+            <textarea id="in-servicos" rows="5" oninput="updatePDF()">Planejamento do roteiro e ajuste de data do evento;
+Treinamento de acordo com o produto da ação a ser executada;
+Entrega de fardamento e material de trabalho;
+Execução do evento.</textarea>
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+            <label>Descrição do Investimento</label>
+            <textarea id="in-inv-desc" rows="3" oninput="updatePDF()">Execução de abordagem, Campanha publicitária (entrega de brindes e/ou panfletos, degustação, abordagem e divulgação de produtos).</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Valores do Investimento</label>
+            <span class="help-text">Insira os valores. (Cada linha fica abaixo da outra no PDF).</span>
+            <textarea id="in-inv-valores" rows="4" oninput="updatePDF()">R$ 180,00 reais por 06 horas (Campina Grande)
+R$ 200,00 reais por 06 horas (Demais Regiões)
+R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Observações do Valor</label>
+            <input type="text" id="in-obs" value="Obs: Verba adicional de 1,00 por brindes. Valores referentes a uma diária." oninput="updatePDF()">
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+            <label>Formas de Pagamento</label>
+            <textarea id="in-pagamento" rows="4" oninput="updatePDF()">O pagamento será efetuado pela contratante após a emissão da nota fiscal através de depósito bancário ou Pix na conta do contratado, logo após o encerramento do contrato de serviço.</textarea>
+        </div>
+
+        <button class="btn-gerar" onclick="window.print()">🖨️ Gerar PDF</button>
+    </div>
+
+    <!-- Wrapper adicionado para rolagem no celular -->
+    <div class="pdf-wrapper" id="pdf-section">
+        <!-- Visualização do PDF -->
+        <div class="pdf-preview" id="pdf-content">
+            
+            <!-- CABEÇALHO EM IMAGEM -->
+            <div class="header">
+                <img src="cabecalho.png" alt="Cabeçalho">
+            </div>
+
+            <!-- CONTEÚDO DO ORÇAMENTO -->
+            <div class="content">
+                
+                <div class="main-title">Orçamento</div>
+
+                <p><strong>Solicitante:</strong> <span id="out-solicitante"></span></p>
+                <p><strong>Datas:</strong> Do dia <span id="out-datas"></span></p>
+                <p><strong>Horário:</strong> <span id="out-horarios"></span></p>
+                <p><strong>Local:</strong> <span id="out-local"></span></p>
+                <p><strong>Evento:</strong> <span id="out-evento"></span></p>
+
+                <div class="section-title">Serviços</div>
+                <p><strong>Antes do evento:</strong></p>
+                <ul id="out-servicos"></ul>
+
+                <div class="section-title">Investimento</div>
+                <p id="out-inv-desc"></p>
+                <ul id="out-inv-valores"></ul>
+                <p><em id="out-obs"></em></p>
+
+                <div class="section-title">Formas de pagamentos</div>
+                <p id="out-pagamento"></p>
+            </div>
+
+            <!-- RODAPÉ EM IMAGEM -->
+            <div class="footer">
+                <img src="rodape.png" alt="Rodapé">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para alternar as abas no mobile
+        function switchTab(tab) {
+            const formSection = document.getElementById('form-section');
+            const pdfSection = document.getElementById('pdf-section');
+            const tabForm = document.getElementById('tab-form');
+            const tabPdf = document.getElementById('tab-pdf');
+
+            if (tab === 'form') {
+                formSection.classList.remove('hide-mobile');
+                pdfSection.classList.remove('show-mobile');
+                tabForm.classList.add('active');
+                tabPdf.classList.remove('active');
+            } else {
+                formSection.classList.add('hide-mobile');
+                pdfSection.classList.add('show-mobile');
+                tabForm.classList.remove('active');
+                tabPdf.classList.add('active');
+            }
+        }
+
+        function formatarData(dataISO) {
+            if(!dataISO) return '';
+            const [ano, mes, dia] = dataISO.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function atualizarLista(idInput, idOutput, isTraco = false) {
+            const texto = document.getElementById(idInput).value;
+            const linhas = texto.split('\n').filter(linha => linha.trim() !== '');
+            const ul = document.getElementById(idOutput);
+            ul.innerHTML = ''; 
+            
+            linhas.forEach(linha => {
+                const li = document.createElement('li');
+                if(isTraco) {
+                    li.style.listStyleType = 'none';
+                    li.textContent = '- ' + linha;
+                } else {
+                    li.textContent = linha;
+                }
+                ul.appendChild(li);
+            });
+        }
+
+        function updatePDF() {
+            document.getElementById('out-solicitante').textContent = document.getElementById('in-solicitante').value;
+            document.getElementById('out-local').textContent = document.getElementById('in-local').value;
+            document.getElementById('out-evento').textContent = document.getElementById('in-evento').value;
+            document.getElementById('out-inv-desc').textContent = document.getElementById('in-inv-desc').value;
+            document.getElementById('out-obs').textContent = document.getElementById('in-obs').value;
+            document.getElementById('out-pagamento').textContent = document.getElementById('in-pagamento').value;
+            
+            // Datas
+            const dtInicio = formatarData(document.getElementById('in-data-inicio').value);
+            const dtFim = formatarData(document.getElementById('in-data-fim').value);
+            document.getElementById('out-datas').textContent = `${dtInicio} a ${dtFim}.`;
+
+            // Horários
+            const hrInicio = document.getElementById('in-hr-inicio').value;
+            const hrFim = document.getElementById('in-hr-fim').value;
+            document.getElementById('out-horarios').textContent = `Das ${hrInicio} às ${hrFim}`;
+
+            atualizarLista('in-servicos', 'out-servicos', true); 
+            atualizarLista('in-inv-valores', 'out-inv-valores', false);
+        }
+        
+        updatePDF();
+    </script>
+</body>
+</html>
