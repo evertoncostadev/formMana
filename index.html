@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Orçamento - Mana Ferreira</title>
     <style>
-        /* Variáveis de Cores */
+        /* === CORES E BASE === */
         :root {
             --cor-primaria: #000000;
             --cor-secundaria: #fbb03b; 
@@ -27,7 +27,7 @@
             gap: 30px; 
         }
         
-        /* === NAVEGAÇÃO MOBILE === */
+        /* === MOBILE === */
         .mobile-tabs {
             display: none; 
             width: 100%;
@@ -69,82 +69,40 @@
         .form-container::-webkit-scrollbar { width: 8px; }
         .form-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .form-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-        .form-container::-webkit-scrollbar-thumb:hover { background: #aaa; }
 
         .form-container h2 { 
-            margin-top: 0; 
-            font-size: 20px; 
-            position: sticky; 
-            top: 0; 
-            background: white; 
-            padding-bottom: 15px; 
-            border-bottom: 1px solid var(--cor-borda); 
-            z-index: 10; 
-            color: var(--cor-primaria);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-top: 0; font-size: 20px; position: sticky; top: 0; 
+            background: white; padding-bottom: 15px; border-bottom: 1px solid var(--cor-borda); 
+            z-index: 10; color: var(--cor-primaria);
         }
 
         .form-group { margin-bottom: 18px; }
         .row { display: flex; gap: 10px; }
         .row .form-group { flex: 1; }
 
-        label { 
-            display: block; 
-            font-weight: 600; 
-            margin-bottom: 6px; 
-            font-size: 14px; 
-            color: var(--cor-texto); 
-        }
-        .help-text { 
-            font-size: 12px; 
-            color: #777; 
-            margin-bottom: 8px; 
-            display: block; 
-            font-style: italic;
-        }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: var(--cor-texto); }
+        .help-text { font-size: 12px; color: #777; margin-bottom: 8px; display: block; font-style: italic; }
 
         input, textarea { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid var(--cor-borda); 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-family: inherit; 
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background-color: var(--cor-input);
+            width: 100%; padding: 12px; border: 1px solid var(--cor-borda); 
+            border-radius: 8px; box-sizing: border-box; font-family: inherit; 
+            font-size: 14px; background-color: var(--cor-input);
         }
-
         input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--cor-secundaria);
-            background-color: white;
+            outline: none; border-color: var(--cor-secundaria); background-color: white;
             box-shadow: 0 0 0 3px rgba(251, 176, 59, 0.2);
         }
 
         hr { border: 0; border-top: 1px dashed var(--cor-borda); margin: 25px 0; }
         
         .btn-gerar { 
-            background-color: var(--cor-primaria); 
-            color: var(--cor-secundaria); 
-            border: none; 
-            padding: 16px; 
-            width: 100%; 
-            cursor: pointer; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            font-size: 16px; 
-            margin-top: 10px; 
-            transition: background-color 0.3s, transform 0.1s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            background-color: var(--cor-primaria); color: var(--cor-secundaria); 
+            border: none; padding: 16px; width: 100%; cursor: pointer; 
+            border-radius: 8px; font-weight: bold; font-size: 16px; 
+            margin-top: 10px; text-transform: uppercase;
         }
-        .btn-gerar:hover { background-color: #333; transform: translateY(-2px); }
-        .btn-gerar:active { transform: translateY(0); }
 
-        /* === RESPONSIVIDADE PARA MOBILE === */
+        /* === RESPONSIVIDADE MOBILE === */
         .pdf-wrapper { display: flex; justify-content: center; }
 
         @media (max-width: 900px) {
@@ -153,11 +111,7 @@
             .form-container { max-width: 100%; height: calc(100vh - 80px); border-radius: 8px; }
             .pdf-wrapper { width: 100%; overflow-x: hidden; padding-bottom: 20px; display: none; }
             
-            .pdf-preview {
-                transform: scale(0.45); 
-                transform-origin: top center; 
-                margin-bottom: -60%; 
-            }
+            .pdf-preview { transform: scale(0.45); transform-origin: top center; margin-bottom: -60%; }
 
             .show-mobile { display: block !important; }
             .hide-mobile { display: none !important; }
@@ -166,27 +120,23 @@
 
         /* === MÁGICA DA FOLHA A4 === */
         .pdf-preview { 
-            width: 210mm; 
-            min-height: 297mm; 
-            margin: 0 auto; 
-            background: white; 
-            box-shadow: 0 0 15px rgba(0,0,0,0.15); 
-            box-sizing: border-box; 
-            position: relative; /* Segura as imagens absolutas */
+            width: 210mm; min-height: 297mm; margin: 0 auto; background: white; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.15); box-sizing: border-box; 
+            position: relative; /* Segura as imagens no lugar */
             flex-shrink: 0;
         }
 
-        /* Imagens presas no topo e fim da folha */
-        .header-img { position: absolute; top: 0; left: 0; width: 100%; z-index: 5; }
-        .footer-img { position: absolute; bottom: 0; left: 0; width: 100%; z-index: 5; }
-        .header-img img, .footer-img img { width: 100%; display: block; }
+        /* Imagens fixadas na tela visual */
+        .print-header, .print-footer { width: 100%; display: block; z-index: 5; }
+        .print-header { position: absolute; top: 0; left: 0; }
+        .print-footer { position: absolute; bottom: 0; left: 0; }
 
-        /* A tabela agora serve apenas para alinhar e proteger o texto */
-        .pdf-table { width: 100%; border-collapse: collapse; position: relative; z-index: 10; }
+        /* A tabela flui o texto e reserva o espaço exato das imagens */
+        .pdf-table { width: 100%; position: relative; z-index: 10; border-collapse: collapse; }
         
-        /* Aumente ou diminua estes valores se o texto invadir a arte do cabeçalho/rodapé */
-        .header-space { height: 200px; } 
-        .footer-space { height: 160px; }
+        /* O Javascript vai preencher o height (altura) destas divs automaticamente */
+        #space-header { height: 180px; } /* Valor padrão reserva */
+        #space-footer { height: 200px; } /* Valor padrão reserva */
 
         .content { padding: 0 20mm; color: black; font-size: 14px; line-height: 1.6; }
         .content p { margin: 5px 0; }
@@ -196,7 +146,7 @@
         ul { margin-top: 5px; padding-left: 20px; margin-bottom: 15px; }
         #out-inv-valores { list-style-type: none; padding-left: 0; }
 
-        /* === CONFIGURAÇÕES RIGOROSAS PARA IMPRESSÃO E PDF === */
+        /* === CONFIGURAÇÕES PARA A IMPRESSÃO SAIR PERFEITA === */
         @media print {
             @page { margin: 0; } 
             body { background: white; padding: 0; margin: 0; display: block; }
@@ -204,18 +154,15 @@
             .pdf-wrapper { overflow: visible !important; padding: 0; display: block !important; }
             
             .pdf-preview { 
-                box-shadow: none; 
-                width: 100%; 
-                min-height: auto; 
-                margin: 0; 
-                transform: scale(1) !important; 
+                box-shadow: none; width: 100%; min-height: auto; 
+                margin: 0; transform: scale(1) !important; 
             }
 
-            /* Na impressão, o "absolute" vira "fixed" para repetir em TODAS as folhas */
-            .header-img { position: fixed; top: 0; }
-            .footer-img { position: fixed; bottom: 0; }
+            /* Fixa as imagens no papel na hora de imprimir */
+            .print-header { position: fixed; top: 0; }
+            .print-footer { position: fixed; bottom: 0; }
 
-            /* Repete os espaços invisíveis para o texto não ficar por cima da imagem */
+            /* Faz os espaços repetirem a cada nova folha pra proteger o texto */
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
@@ -274,7 +221,6 @@
 
         <div class="form-group">
             <label>Serviços</label>
-            <span class="help-text">Cada linha digitada cria um novo item na lista do PDF.</span>
             <textarea id="in-servicos" rows="5" oninput="updatePDF()">Planejamento do roteiro e ajuste de data do evento;
 Treinamento de acordo com o produto da ação a ser executada;
 Entrega de fardamento e material de trabalho;
@@ -290,7 +236,6 @@ Execução do evento.</textarea>
 
         <div class="form-group">
             <label>Valores do Investimento</label>
-            <span class="help-text">Insira os valores. (Cada linha fica abaixo da outra no PDF).</span>
             <textarea id="in-inv-valores" rows="4" oninput="updatePDF()">R$ 180,00 reais por 06 horas (Campina Grande)
 R$ 200,00 reais por 06 horas (Demais Regiões)
 R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
@@ -308,27 +253,21 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
             <textarea id="in-pagamento" rows="4" oninput="updatePDF()">O pagamento será efetuado pela contratante após a emissão da nota fiscal através de depósito bancário ou Pix na conta do contratado, logo após o encerramento do contrato de serviço.</textarea>
         </div>
 
-        <button class="btn-gerar" onclick="window.print()">🖨️ Gerar PDF</button>
+        <button class="btn-gerar" onclick="prepararImpressao()">🖨️ Gerar PDF</button>
     </div>
 
     <!-- Wrapper para o PDF -->
     <div class="pdf-wrapper" id="pdf-section">
-        <!-- Visualização Estruturada -->
         <div class="pdf-preview" id="pdf-content">
             
-            <!-- IMAGENS FORA DA TABELA (Coladas nas bordas) -->
-            <div class="header-img">
-                <img src="cabecalho.png" alt="Cabeçalho">
-            </div>
-            <div class="footer-img">
-                <img src="rodape.png" alt="Rodapé">
-            </div>
+            <!-- IMAGENS FIXAS -->
+            <img src="cabecalho.png" class="print-header" id="img-header" alt="Cabeçalho">
+            <img src="rodape.png" class="print-footer" id="img-footer" alt="Rodapé">
             
-            <!-- TABELA APENAS PARA ESPAÇAMENTO -->
+            <!-- TABELA QUE ESTRUTURA O TEXTO -->
             <table class="pdf-table">
-                <thead>
-                    <tr><td><div class="header-space"></div></td></tr>
-                </thead>
+                <!-- Cabeçalho Invisível que reserva o espaço da imagem -->
+                <thead><tr><td><div id="space-header"></div></td></tr></thead>
                 
                 <tbody>
                     <tr>
@@ -358,9 +297,8 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
                     </tr>
                 </tbody>
 
-                <tfoot>
-                    <tr><td><div class="footer-space"></div></td></tr>
-                </tfoot>
+                <!-- Rodapé Invisível que reserva o espaço da imagem -->
+                <tfoot><tr><td><div id="space-footer"></div></td></tr></tfoot>
             </table>
         </div>
     </div>
@@ -384,6 +322,24 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
                 tabPdf.classList.add('active');
             }
         }
+
+        // Script Mágico: Lê a altura das imagens e cria um espaço vazio igual pra elas!
+        function ajustarEspacos() {
+            const headerImg = document.getElementById('img-header');
+            const footerImg = document.getElementById('img-footer');
+            
+            if (headerImg && headerImg.clientHeight > 0) {
+                document.getElementById('space-header').style.height = headerImg.clientHeight + 'px';
+            }
+            if (footerImg && footerImg.clientHeight > 0) {
+                document.getElementById('space-footer').style.height = footerImg.clientHeight + 'px';
+            }
+        }
+
+        // Ajustar assim que as imagens terminarem de carregar
+        document.getElementById('img-header').onload = ajustarEspacos;
+        document.getElementById('img-footer').onload = ajustarEspacos;
+        window.addEventListener('resize', ajustarEspacos);
 
         function formatarData(dataISO) {
             if(!dataISO) return '';
@@ -427,8 +383,15 @@ R$ 40,00 Lavagem dos vestidos (Semanalmente)</textarea>
 
             atualizarLista('in-servicos', 'out-servicos', true); 
             atualizarLista('in-inv-valores', 'out-inv-valores', false);
+            
+            ajustarEspacos(); // Garante a atualização do espaço sempre que digitar
         }
         
+        function prepararImpressao() {
+            ajustarEspacos(); // Ajusta os tamanhos antes de abrir a janela
+            setTimeout(() => window.print(), 300); // Aguarda um instante para aplicar
+        }
+
         updatePDF();
     </script>
 </body>
